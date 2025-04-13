@@ -1,4 +1,5 @@
 import sys
+import base64
 import os
 import asyncio
 import threading
@@ -11,8 +12,10 @@ from PyQt6.QtWidgets import (
     QVBoxLayout, QHBoxLayout, QMessageBox, QListWidget, QListWidgetItem, QCheckBox,
     QSplitter, QScrollArea, QInputDialog, QFrame
 )
-from PyQt6.QtGui import QFont, QBrush, QColor
-from PyQt6.QtCore import Qt, QTimer
+from PyQt6.QtGui import QFont, QBrush, QColor, QIcon, QPixmap
+from PyQt6.QtCore import Qt, QTimer, QByteArray
+
+from icon_data import ICON_DATA
 
 from telethon import TelegramClient, errors
 from telethon.tl.functions.messages import DeleteHistoryRequest
@@ -818,6 +821,12 @@ def main():
     t = threading.Thread(target=start_event_loop, args=(loop,), daemon=True)
     t.start()
     app = QApplication(sys.argv)
+    # Convert base64 to QIcon
+    icon_bytes = QByteArray.fromBase64(ICON_DATA.encode('utf-8'))
+    pixmap = QPixmap()
+    pixmap.loadFromData(icon_bytes)
+    icon = QIcon(pixmap)
+    app.setWindowIcon(icon)
     while True:
         session_mgr = SessionManager()
         if session_mgr.exec() == QDialog.DialogCode.Accepted:
